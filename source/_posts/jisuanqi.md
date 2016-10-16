@@ -46,7 +46,6 @@ char precede(char op1, char op2)
 {
     map<char, int> inner_op;
     map<char, int> outer_op;
-    map<char, int>::iterator iter;
 
     //初始化栈内运算符的优先级
     inner_op['#'] = 0;
