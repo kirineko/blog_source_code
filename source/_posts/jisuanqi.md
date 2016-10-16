@@ -124,7 +124,8 @@ int evaluate_expression()
 
     while( c != '#' || OPTR.top() != '#')
     {
-        if (!isOP(c)) //如果是操作数，则转化为整形入操作数栈
+        //如果是操作数，则转化为整形入操作数栈
+        if (!isOP(c)) 
         {
             int num = c - '0';
             if (num > 9 || num < 0) {
@@ -134,19 +135,23 @@ int evaluate_expression()
             OPND.push(num);
             c = getchar();
         }
-        else //如果是运算符则判断运算符的优先级
+        //如果是运算符则判断运算符的优先级
+        //如果栈顶元素优先级低，则栈外运算符入栈
+        //如果栈顶元素优先级和栈外元素相等，则去括号
+        //如果栈顶元素优先级高于栈外元素，则退栈并将运算结果入操作数栈
+        else 
         {
             switch (precede(OPTR.top(), c))
             {
-                case '<': //栈顶元素优先权低 
+                case '<': 
                     OPTR.push(c);
                     c = getchar();
                     break;
-                case '=': //优先权相等，脱括号并接收下一个字符
+                case '=': 
                     OPTR.pop();
                     c = getchar();
                     break;
-                case '>': //栈顶元素优先权高，退栈并将运算结果入栈
+                case '>': 
                     char theta = OPTR.top();
                     OPTR.pop();
                     int b = OPND.top();
