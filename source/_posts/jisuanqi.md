@@ -15,6 +15,8 @@ tags: 数据结构
 #include <stack>
 #include <map>
 #include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 using namespace std;
 
@@ -123,44 +125,46 @@ int evaluate_expression()
 
     while( c != '#' || OPTR.top() != '#')
     {
-        //如果是操作数，则转化为整形入操作数栈
-        if (!isOP(c)) 
+        int num = 0;
+        bool flag = false;
+        //如果是操作数，则循环读取，直到c是运算符
+        while (!isOP(c)) 
         {
-            int num = c - '0';
-            if (num > 9 || num < 0) {
-                cout << "请不要乱输入运算符"<< c << endl;
+            flag = true;
+            int bit_num = c - '0';
+            if (bit_num > 9 || bit_num < 0) {
+                cout << "请不要乱输入运算符" << c << endl;
                 exit(0);
             }
-            OPND.push(num);
+            num = num * 10 + bit_num;
             c = getchar();
         }
-        //如果是运算符则判断运算符的优先级
-        //如果栈顶元素优先级低，则栈外运算符入栈
-        //如果栈顶元素优先级和栈外元素相等，则去括号
-        //如果栈顶元素优先级高于栈外元素，则退栈并将运算结果入操作数栈
-        else 
+        // 如果flag == true，说明输入了操作数，应将其入栈，如果flag == false说明上一步的输入时运算符，则不应该入栈操作数
+        if (flag) { 
+            OPND.push(num);
+        }
+        //从while循环退出以后c一定是运算符，如果是运算符则判断运算符的优先级
+        //栈顶元素优先权低, 栈外运算符入栈, 优先权相等，脱括号并接收下一个字符，栈顶元素优先权高，退栈并将运算结果入栈
+        switch (precede(OPTR.top(), c))  
         {
-            switch (precede(OPTR.top(), c))
-            {
-                case '<': 
-                    OPTR.push(c);
-                    c = getchar();
-                    break;
-                case '=': 
-                    OPTR.pop();
-                    c = getchar();
-                    break;
-                case '>': 
-                    char theta = OPTR.top();
-                    OPTR.pop();
-                    int b = OPND.top();
-                    OPND.pop();
-                    int a = OPND.top();
-                    OPND.pop();
-                    int result = operate(a,b,theta);
-                    OPND.push(result);
-                    break;
-            }
+            case '<': 
+                OPTR.push(c);
+                c = getchar();
+                break;
+            case '=': 
+                OPTR.pop();
+                c = getchar();
+                break;
+            case '>': 
+                char theta = OPTR.top();
+                OPTR.pop();
+                int b = OPND.top();
+                OPND.pop();
+                int a = OPND.top();
+                OPND.pop();
+                int result = operate(a, b, theta);
+                OPND.push(result);
+                break;
         }
     }
     return OPND.top();
